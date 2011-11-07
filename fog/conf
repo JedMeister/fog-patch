@@ -1,0 +1,20 @@
+#!/bin/bash -ex
+install()
+{
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get -y \
+        -o DPkg::Options::=--force-confdef \
+        -o DPkg::Options::=--force-confold \
+        install $@
+}
+
+HOSTNAME=fog-server
+
+# set hostname
+echo "$HOSTNAME" > /etc/hostname
+sed -i "s|127.0.1.1 \(.*\)|127.0.1.1 $HOSTNAME|" /etc/hosts
+
+cd /opt
+wget http://sourceforge.net/projects/freeghost/files/FOG/fog_0.32/fog_0.32.tar.gz -O fog-setup.tar.gz
+tar xvzf fog-setup.tar.gz
+

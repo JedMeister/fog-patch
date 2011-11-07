@@ -1,0 +1,13 @@
+TKLPatch of FOG:
+
+http://www.fogproject.org/
+http://sourceforge.net/projects/freeghost/
+http://www.turnkeylinux.org/forum/general/20110701/itp-fog-free-cloning-solution
+http://www.fogproject.org/wiki/index.php?title=Ubuntu_10.04
+
+Notes:
+IMO rather than use the generic foginstall.sh it would be better to script these bits into the conf file of the patch.
+As FOG is designed to be installed to a clean Ubuntu (or other) install I am currently working on a Core install, but seeing as FOG is actually LAMP based it makes more sense tp use TKL LAMP as a base ultimately.
+Also some parts of the install (such as setting IP address) need to be in firstboot scripts.
+By default IP setting etc is in fog/lib/commmon/input.sh
+More notes on the TKLPatch - FOG-server forum thread here: http://www.turnkeylinux.org/forum/general/20111107/tklpatch-fog-server
