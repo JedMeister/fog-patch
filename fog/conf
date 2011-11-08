@@ -18,3 +18,27 @@ cd /opt
 wget http://sourceforge.net/projects/freeghost/files/FOG/fog_0.32/fog_0.32.tar.gz -O fog-setup.tar.gz
 tar xvzf fog-setup.tar.gz
 
+install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam
+
+#config funtions
+configureUsers;
+			configureMySql;
+			backupReports;
+			configureHttpd;
+			restoreReports;
+			setupFreshClam;
+			configureStorage;
+			configureNFS;
+			configureDHCP;
+			configureTFTPandPXE;
+			configureFTP;
+			configureSudo;
+			configureSnapins;
+			configureUDPCast;          
+			installInitScript;
+			installFOGServices;
+			configureFOGService;
+			installUtils;
+			sendInstallationNotice;
+			writeUpdateFile;
+
