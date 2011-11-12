@@ -1,4 +1,6 @@
 #!/bin/bash
+# 
+# Modified by Jeremy Davis (aka JedMeister) for TKL appliance creation
 #
 #  FOG is a computer imaging solution.
 #  Copyright (C) 2007  Chuck Syperski & Jian Zhang
@@ -21,8 +23,8 @@
 
 # Include all the common installer stuff for all distros
 
-/opt/fog-setup/lib/common/functions.sh
-/opt/fog-setup/lib/common/config.sh
+. ../lib/common/functions.sh
+. ../lib/common/config.sh
 
 installtype="";
 ipaddress="";
@@ -57,18 +59,34 @@ doupdate="1";
 #ignore htmldoc
 ignorehtmldoc="0";
 
-#clearScreen;
-#displayBanner;
+clearScreen;
+displayBanner;
 echo "  Version: ${version} Installer/Updater";
 echo "";
 
 sleep 1;
 
-#JD - Added this, not sure on full impact yet... we'll see I guess...
-guessdefaults="0";
+# process arguments
+for arg in $*
+do 
+	case "$arg" in
+		"--help" )
+			help;
+			exit 1;
+			;;
+		"--no-defaults" )
+			guessdefaults="0";
+			;;
+		"--no-upgrade" )
+			doupdate="0";
+			;;	
+		"--no-htmldoc" )
+			ignorehtmldoc="1";
+			;;		
+	esac
+done
 
-
-#warnRoot
+warnRoot
 
 if [ "$doupdate" = "1" ]
 then
@@ -85,7 +103,7 @@ else
 fi
 
 
-/opt/fog-setup/lib/common/input.sh
+. ../lib/common/input.sh
 
 if [ "$installtype" = "N" ]
 then

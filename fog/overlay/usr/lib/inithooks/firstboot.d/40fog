@@ -1,0 +1,11 @@
+#!/bin/bash -e
+# FOG firstboot config file
+
+# set FOG admin password, email and domain to serve
+#need to set this up yet...
+
+. /etc/default/inithooks
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+
+$INITHOOKS_PATH/bin/fog.py --pass="$APP_PASS" --protocol="$APP_PROTOCOL" --domain="$APP_DOMAIN"
