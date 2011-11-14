@@ -1,1 +1,1 @@
-GRANT ALL PRIVILEGES ON fog.* TO 'fog-usr'@localhost IDENTIFIED BY 'random-password';
+GRANT ALL PRIVILEGES ON fog.* TO 'fog-usr'@localhost IDENTIFIED BY 'random-mysql-password';

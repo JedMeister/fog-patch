@@ -1,6 +1,6 @@
 ## Created by the FOG Installer
 ## Version: 0.32
-## Install time: Fri Nov 11 23:24:52 2011
+## Install time: Mon Nov 14 11:36:28 2011
 	
 ipaddress="192.168.1.102";
 interface="eth0";
@@ -8,14 +8,14 @@ routeraddress="		option routers      192.168.1.220;";
 plainrouter="192.168.1.220";
 dnsaddress="	option domain-name-servers      192.168.1.1; ";
 dnsbootimage="192.168.1.1";
-password="ebabaa1f2e6c51d51f764fdcd8da77b0";
+password="6f9c760697d2cbec277668ef98a4480a";
 osid="2";
 osname="Ubuntu";
 dodhcp="y";
 bldhcp="1";
 installtype="N";
-snmysqluser=""
-snmysqlpass="";
-snmysqlhost="";
+snmysqluser="fog-usr"
+snmysqlpass="random-password";
+snmysqlhost="localhost";
 installlang="0";
 fogupdateloaded="1"
