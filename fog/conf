@@ -15,17 +15,19 @@ FOGVERSION=fog_0.32
 echo "$HOSTNAME" > /etc/hostname
 sed -i "s|127.0.1.1 \(.*\)|127.0.1.1 $HOSTNAME|" /etc/hosts
 
-#install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam
+#install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam webmin-dhcpd webmin-apache
 
 # set up database
 service mysql start
 cd /opt/tmp
 mysqladmin -u root create fog
-mysql -u root -prooter fog<fog-usr.sql
-mysql -u root -prooter fog<fog.sql
+#mysql -u root -prooter fog<fog-usr.sql
+#mysql -u root -prooter fog<fog.sql
+mysql -u root fog<fog-usr.sql
+mysql -u root fog<fog.sql
 
 cd /opt
-wget http://sourceforge.net/projects/freeghost/files/FOG/fog_0.32/$FOGVERSION.tar.gz
+wget http://sourceforge.net/projects/freeghost/files/FOG/$FOGVERSION/$FOGVERSION.tar.gz
 tar xvzf $FOGVERSION.tar.gz
 cd $FOGVERSION/bin
 ./installfog.sh < /opt/tmp/answers
