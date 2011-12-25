@@ -32,3 +32,6 @@ tar xvzf $FOGVERSION.tar.gz
 cd $FOGVERSION/bin
 ./installfog.sh < /opt/tmp/answers
 mv /opt/tmp/config.php /var/www/fog/commons/
+
+service apache2 stop
+service mysql stop
