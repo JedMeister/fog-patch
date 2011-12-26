@@ -3,16 +3,20 @@
 
 Option:
     --pass=     unless provided, will ask interactively
-    --ip=		unless provided, will ask interactively
+    --ip=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
-	--usedhcp=	unless provided, will ask interactively
-				DEFAULT=y
-	--interface=unless provided, will ask interactively
-				Will suggest (hopefully) reasonable guess
-	--route=	unless provided, will ask interactively
+                eg 192.168.1.2
+    --usedhcp=	unless provided, will ask interactively
+		DEFAULT=y
+    --interface=unless provided, will ask interactively
+		Will suggest (hopefully) reasonable guess
+		eg eth0
+    --route=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
-	--dns=		unless provided, will ask interactively
+                eg 192.168.1.254
+    --dns=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
+                eg 192.168.1.1
 """
 
 import sys
@@ -33,14 +37,13 @@ import os
 def usage(s=None):
     if s:
         print >> sys.stderr, "Error:", s
-    print >> sys.stderr, "Syntax: %s [options]" % sys.argv[0]
-    print >> sys.stderr, __doc__
-    sys.exit(1)
+        print >> sys.stderr, "Syntax: %s [options]" % sys.argv[0]
+        print >> sys.stderr, __doc__
+        sys.exit(1)
 
-DEFAULT_IP = "192.168.1.2"
+SUGGEST_IP = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
 DEFAULT_USE_DHCP = "y"
 SUGGEST_IF = commands.getoutput("ifconfig").split("\n")[0].split()[0]
-SUGGEST_IP = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
 SUGGEST_ROUTE = commands.getoutput("route -n").split("\n")[3].split()[1]
 SUGGEST_DNS = commands.getoutput("cat /etc/resolv.conf").split("\n")[2].split()[1]
 
@@ -51,9 +54,12 @@ def main():
     except getopt.GetoptError, e:
         usage(e)
 
-    dhcpused = ""
-    ipaddr = ""
     password = ""
+    ipaddr = ""
+    dhcpused = ""
+    interf = ""
+    router = ""
+    nameserve = ""    
 	
     for opt, val in opts:
         if opt in ('-h', '--help'):
@@ -63,16 +69,19 @@ def main():
         elif opt == '--ip':
             ipaddr = val
         elif opt == '--usedhcp':
-            bindused = val
+            dhcpused = val
+        elif opt == '--interface':
+            interf = val
+        elif opt == '--route':
+            router = val
+        elif opt == '--dns':
+            nameserver = val
 
     if not password:
         d = Dialog('TurnKey Linux - First boot configuration')
         password = d.get_password(
             "FOG Password",
             "Enter new password for the default FOG Admin account ('fog').")
-			
-	command = ["chpasswd"]
-    input = ":".join(["fog", password])
     
     if not ipaddr:
         if 'd' not in locals():
@@ -97,6 +106,42 @@ def main():
 
     if dhcpused == "DEFAULT":
         dhcpused = DEFAULT_USE_DHCP
+
+    if not interf:
+        if 'd' not in locals():
+            d = Dialog('TurnKey Linux - First boot configuration')
+
+        interf = d.get_input(
+            "Set default interface for FOG server",
+            "Enter default interface",
+            SUGGEST_IF)
+
+    if dhcpused == "DEFAULT":
+        dhcpused = SUGGEST_IF
+
+    if not router:
+        if 'd' not in locals():
+            d = Dialog('TurnKey Linux - First boot configuration')
+
+        router = d.get_input(
+            "Set FOG server internet gateway",
+            "Enter your router or transparent proxy IP. This will also be handed to clients",
+            SUGGEST_ROUTE)
+
+    if router == "DEFAULT":
+        router = SUGGEST_ROUTE
+
+    if not nameserver:
+        if 'd' not in locals():
+            d = Dialog('TurnKey Linux - First boot configuration')
+
+        dnameserver = d.get_input(
+            "Set FOG server DNS",
+            "SEnter the nameserver for FOG. This will also be handed to clients",
+            SUGGEST_DNS)
+
+    if nameserver == "DEFAULT":
+        nameserver = SUGGEST_DNS
 
 # password setting for WebUI
     hash = md5.md5(password)
@@ -155,7 +200,7 @@ def main():
         temp.close()
         shutil.move(TEMP_FILE, CONF_FILE)
     thing = 'PXE_IMAGE_DNSADDRESS'
-	conf = open(CONF_FILE, "r")
+    conf = open(CONF_FILE, "r")
     temp = open(TEMP_FILE, "w")
     for line in conf:
         if line.lstrip().startswith(start+thing):
@@ -166,8 +211,6 @@ def main():
         temp.close()
         shutil.move(TEMP_FILE, CONF_FILE)
 #
-
-
 
 #    temp.write(conf.readline())
     
