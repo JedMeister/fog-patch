@@ -1,13 +1,13 @@
 ## Created by the FOG TKLPatch
 ## Version: 0.32
 	
-ipaddress="192.168.1.2";
+ipaddress="192.168.1.10";
 interface="eth0";
 routeraddress="		option routers      192.168.1.254;";
 plainrouter="192.168.1.254";
 dnsaddress="	option domain-name-servers      192.168.1.1; ";
 dnsbootimage="192.168.1.1";
-password="6f9c760697d2cbec277668ef98a4480a";
+password="5f4dcc3b5aa765d61d8327deb882cf99";
 osid="2";
 osname="Ubuntu";
 dodhcp="y";

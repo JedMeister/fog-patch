@@ -26,6 +26,7 @@ mysqladmin -u root create fog
 mysql -u root fog<fog-usr.sql
 mysql -u root fog<fog.sql
 
+# install & config FOG
 cd /opt
 wget http://sourceforge.net/projects/freeghost/files/FOG/$FOGVERSION/$FOGVERSION.tar.gz
 tar xvzf $FOGVERSION.tar.gz
@@ -33,5 +34,20 @@ cd $FOGVERSION/bin
 ./installfog.sh < /opt/tmp/answers
 mv /opt/tmp/config.php /var/www/fog/commons/
 
+# disable default apache sites and enable FOG standalone
+a2dissite default
+a2ensite fog-standalone
+
+# shutdown services
 service apache2 stop
 service mysql stop
+service tftpd-hpa stop
+service vsftpd stop
+
+# cleanup
+apt-get clean
+rm -rf /opt/tmp
+rm -f /opt/$FOGVERSION.tar.gz
+rm -rf /opt/$FOGVERSION
+
+# end

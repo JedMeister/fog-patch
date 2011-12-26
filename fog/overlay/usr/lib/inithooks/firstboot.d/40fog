@@ -7,14 +7,4 @@
 
 [ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
 
-SUGGEST_IP=`ifconfig | grep "inet addr:" | head -n 1  | cut -d':' -f2 | cut -d' ' -f1`;
-SUGGEST_IF=`ifconfig | grep "Link encap:" | head -n 1 | cut -d' ' -f1`;
-SUGGEST_ROUTE=`route -n | grep "^.*UG.*${SUGGEST_IF}$"  | head -n 1`;
-SUGGEST_ROUTE=`echo ${SUGGEST_ROUTE:16:16} | tr -d [:blank:]`;
-SUGGEST_DNS=""
-	if [ -f "/etc/resolv.conf" ]
-	then
-	SUGGEST_DNS=` cat /etc/resolv.conf | grep "nameserver" | head -n 1 | tr -d "nameserver" | tr -d [:blank:] | grep "^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$"`
-	fi
-
 $INITHOOKS_PATH/bin/fog.py --pass="$APP_PASS" --ip="$APP_IP" --use-dhcp="$APP_USE_DHCP" --interface="$APP_IF" --route="$APP_ROUTE" --dns="$APP_DNS"
