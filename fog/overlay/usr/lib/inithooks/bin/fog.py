@@ -1,10 +1,12 @@
 #!/usr/bin/python
-"""Set FOG admin password and domain to serve # currently just a copy of the concrete5 py
+"""Set FOG admin ('fog') password and IP
 
 Option:
-    --pass=     unless provided, will ask interactively # Not working yet
-    --domain=   unless provided, will ask interactively
-                DEFAULT=concrete5.example.com
+    --pass=     unless provided, will ask interactively
+    --ip=		unless provided, will ask interactively
+                DEFAULT=192.168.1.2
+	--use-dhcp=	unless provided, will ask interactively
+				DEFAULT=y
 """
 
 import sys
@@ -28,58 +30,71 @@ def usage(s=None):
     print >> sys.stderr, __doc__
     sys.exit(1)
 
-DEFAULT_DOMAIN="fog.example.com"
-DEFAULT_PROTOCOL="http"
+DEFAULT_IP="192.168.1.2"
+DEFAULT_USE_DHCP="y"
+
+# Get some suggestions
+# I have the bash scripts and don't know enough about python to script this properly so am using bash...
+
+script = """
+SuggestIP=`ifconfig | grep "inet addr:" | head -n 1  | cut -d':' -f2 | cut -d' ' -f1`;
+SuggestInterface=`ifconfig | grep "Link encap:" | head -n 1 | cut -d' ' -f1`;
+SuggestRoute=`route -n | grep "^.*UG.*${strSuggestedInterface}$"  | head -n 1`;
+SuggestRoute=`echo ${SuggestRoute:16:16} | tr -d [:blank:]`;
+SuggestDNS="";
+	if [ -f "/etc/resolv.conf" ]
+	then
+		SuggestDNS=` cat /etc/resolv.conf | grep "nameserver" | head -n 1 | tr -d "nameserver" | tr -d [:blank:] | grep "^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$"`
+	fi
+"""
+os.system("bash -c '%s'" % script)
 
 def main():
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "h",
-                                       ['help', 'pass=', 'protocol=', 'domain='])
+                                       ['help', 'pass=', 'ip='])
     except getopt.GetoptError, e:
         usage(e)
 
-    protocol = ""
-    domain = ""
+    ip = ""
     password = ""
     for opt, val in opts:
         if opt in ('-h', '--help'):
             usage()
         elif opt == '--pass':
             password = val
-        elif opt == '--protocol':
+        elif opt == '--ip':
             protocol = val
-        elif opt == '--domain':
-            domain = val
 
     if not password:
         d = Dialog('TurnKey Linux - First boot configuration')
         password = d.get_password(
-            "Concrete5 Password",
-            "Enter new password for the Concrete5 'admin' account.")
+            "FOG Password",
+            "Enter new password for the default FOG Admin account ('fog').")
     
-    if not protocol:
+    if not ip:
         if 'd' not in locals():
             d = Dialog('TurnKey Linux - First boot configuration')
 
-        protocol = d.get_input(
-            "Concrete5 Protocol",
-            "Enter the protocol to serve Concrete5 (http or https).",
-            DEFAULT_PROTOCOL)
+        ip = d.get_input(
+            "FOG IP address",
+            "Enter the FOG server IP address.",
+            DEFAULT_IP)
 
-    if protocol == "DEFAULT":
-        protocol = DEFAULT_PROTOCOL
+    if ip == "DEFAULT":
+        ip = DEFAULT_IP
 
-    if not domain:
+    if not use-dhcp:
         if 'd' not in locals():
             d = Dialog('TurnKey Linux - First boot configuration')
 
-        domain = d.get_input(
-            "Concrete5 Domain",
-            "Enter the domain to serve Concrete5.",
-            DEFAULT_DOMAIN)
+        use-dhcp = d.get_input(
+            "Use FOG server for DHCP",
+            "Use the FOG server for your network DHCP (y/n)?",
+            DEFAULT_USE_DHCP)
 
-    if domain == "DEFAULT":
-        domain = DEFAULT_DOMAIN
+    if use-dhcp == "DEFAULT":
+        use-dhcp = DEFAULT_USE_DHCP
 
     salt = "".join(random.choice(string.letters+string.digits) for line in range(1, 65))
 #    salt = "qHlUmvrKzyMZlwBy1PQfltXGCezTrwN8Qm2uRABczMkTFBZMcm35J6jIRntPgRpS"
@@ -88,7 +103,7 @@ def main():
 
     m = MySQL()
 #    m.execute('UPDATE concrete5.Users SET uEmail=\"%s\" WHERE username=\"admin\";' % email)
-    m.execute('UPDATE concrete5.Users SET uPassword=\"%s\"  WHERE uName=\"admin\";' % hashpass)
+    m.execute('UPDATE fog.Users SET uPassword=\"%s\"  WHERE uName=\"admin\";' % hashpass)
 
 # Set some variables
     CONF_DIR = "/var/www/concrete5/config/"

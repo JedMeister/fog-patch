@@ -1,11 +1,10 @@
-## Created by the FOG Installer
+## Created by the FOG TKLPatch
 ## Version: 0.32
-## Install time: Mon Nov 14 11:36:28 2011
 	
-ipaddress="192.168.1.102";
+ipaddress="192.168.1.2";
 interface="eth0";
-routeraddress="		option routers      192.168.1.220;";
-plainrouter="192.168.1.220";
+routeraddress="		option routers      192.168.1.254;";
+plainrouter="192.168.1.254";
 dnsaddress="	option domain-name-servers      192.168.1.1; ";
 dnsbootimage="192.168.1.1";
 password="6f9c760697d2cbec277668ef98a4480a";

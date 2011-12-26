@@ -20,7 +20,7 @@
  */
 
 define( "IS_INCLUDED", true );
-define( "TFTP_HOST", "192.168.1.102" );
+define( "TFTP_HOST", "192.168.1.2" );
 define( "TFTP_FTP_USERNAME", "fog" );
 define( "TFTP_FTP_PASSWORD", "6f9c760697d2cbec277668ef98a4480a" );
 define( "TFTP_PXE_CONFIG_DIR", "/tftpboot/pxelinux.cfg/" );
@@ -31,7 +31,7 @@ define( "USE_SLOPPY_NAME_LOOKUPS", "1");
 define( "MEMTEST_KERNEL", "fog/memtest/memtest" );
 define( "PXE_IMAGE",  "fog/images/init.gz" );
 define( "PXE_IMAGE_DNSADDRESS",  "192.168.1.1" );
-define( "STORAGE_HOST", "192.168.1.102" );
+define( "STORAGE_HOST", "192.168.1.2" );
 define( "STORAGE_FTP_USERNAME", "fog" );
 define( "STORAGE_FTP_PASSWORD", "6f9c760697d2cbec277668ef98a4480a" );
 define( "STORAGE_DATADIR", "/images/" );
@@ -39,9 +39,9 @@ define( "STORAGE_DATADIR_UPLOAD", "/images/dev/" );
 define( "STORAGE_BANDWIDTHPATH", "/fog/status/bandwidth.php" );
 define( "CLONEMETHOD", "ntfsclone" );  // valid values partimage, ntfsclone
 define( "UPLOADRESIZEPCT", 5 ); 
-define( "WEB_HOST", "192.168.1.102" );
+define( "WEB_HOST", "192.168.1.2" );
 define( "WEB_ROOT", "/fog/" );
-define( "WOL_HOST", "192.168.1.102" ); 	
+define( "WOL_HOST", "192.168.1.2" ); 	
 define( "WOL_PATH", "/fog/wol/wol.php" );   
 define( "WOL_INTERFACE", "eth0" );
 define( "SNAPINDIR", "/opt/fog/snapins/" );
