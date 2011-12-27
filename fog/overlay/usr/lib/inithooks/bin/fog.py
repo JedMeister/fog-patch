@@ -102,11 +102,10 @@ def main():
 	
     configure = tklconf.networking()
     configure = tklconf._ifconf_staticip()
-    ipaddr = configure.index(0)
-    router = configure.index(1)
-    nameserver = configure.index(2)
     if len(configure) != 3:
-        nameserver2 = configure.index(3)
+        ipaddr, router, nameserver, nameserver2 = configure
+	else:
+	    ipaddr, router, nameserver, nameserver2 = configure
     print ipaddr
     print router
     print nameserver
