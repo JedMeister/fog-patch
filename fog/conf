@@ -15,6 +15,11 @@ FOGVERSION=fog_0.32
 echo "$HOSTNAME" > /etc/hostname
 sed -i "s|127.0.1.1 \(.*\)|127.0.1.1 $HOSTNAME|" /etc/hosts
 
+# create symlinks to confconsole scripts for FOG firstboot scripts
+ln -s /usr/lib/confconsole/conf.py /usr/lib/inithooks/bin/conf.py
+ln -s /usr/lib/confconsole/ifutil.py /usr/lib/inithooks/bin/ifutil.py
+ln -s /usr/lib/confconsole/ipaddr.py /usr/lib/inithooks/bin/ipaddr.py
+
 #install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam webmin-dhcpd webmin-apache
 
 # set up database

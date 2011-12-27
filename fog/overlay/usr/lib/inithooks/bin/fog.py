@@ -33,6 +33,10 @@ from mysqlconf import MySQL
 
 import os
 
+# robbbing stuff from confconsole...
+import confconsolefb as confconsole
+import ifutil
+tklconf = confconsole.TurnkeyConsole()
 
 def usage(s=None):
     if s:
@@ -41,11 +45,11 @@ def usage(s=None):
         print >> sys.stderr, __doc__
         sys.exit(1)
 
-SUGGEST_IP = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+#SUGGEST_IP = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
 DEFAULT_USE_DHCP = "y"
-SUGGEST_IF = commands.getoutput("ifconfig").split("\n")[0].split()[0]
-SUGGEST_ROUTE = commands.getoutput("route -n").split("\n")[3].split()[1]
-SUGGEST_DNS = commands.getoutput("cat /etc/resolv.conf").split("\n")[2].split()[1]
+#SUGGEST_IF = commands.getoutput("ifconfig").split("\n")[0].split()[0]
+#SUGGEST_ROUTE = commands.getoutput("route -n").split("\n")[3].split()[1]
+#SUGGEST_DNS = commands.getoutput("cat /etc/resolv.conf").split("\n")[2].split()[1]
 
 def main():
     try:
@@ -55,11 +59,11 @@ def main():
         usage(e)
 
     password = ""
-    ipaddr = ""
+#    ipaddr = ""
     dhcpused = ""
     interf = ""
-    router = ""
-    nameserve = ""    
+#    router = ""
+#    nameserver = ""    
 	
     for opt, val in opts:
         if opt in ('-h', '--help'):
@@ -83,17 +87,42 @@ def main():
             "FOG Password",
             "Enter new password for the default FOG Admin account ('fog').")
     
-    if not ipaddr:
-        if 'd' not in locals():
-            d = Dialog('TurnKey Linux - First boot configuration')
+#    if not interf:
+#        defaultnic = tklconf._get_default_nic()
+#        if 'd' not in locals():
+#            d = Dialog('TurnKey Linux - First boot configuration')
+#
+#        interf = d.get_input(
+#            "Set default interface for FOG server",
+#            "Enter default interface",
+#            defaultnic)
+#
+#    if interf == "DEFAULT":
+#        interf = defaultnic
+	
+    configure = tklconf.networking()
+    configure = tklconf._ifconf_staticip()
+    ipaddr = configure.index(0)
+    router = configure.index(1)
+    nameserver = configure.index(2)
+    if len(configure) != 3:
+        nameserver2 = configure.index(3)
+    print ipaddr
+    print router
+    print nameserver
+	
+		
+#    if not ipaddr:
+#    	    if 'd' not in locals():
+#               d = Dialog('TurnKey Linux - First boot configuration')
+#
+#            ip = d.get_input(
+#                "FOG IP address",
+#                "Enter the FOG server IP address. Only change this if using a direct connection (or screen) to your FOG server. All current network connections will be lost.",
+#                SUGGEST_IP)
 
-        ip = d.get_input(
-            "FOG IP address",
-            "Enter the FOG server IP address.",
-            SUGGEST_IP)
-
-    if ip == "DEFAULT":
-        ip = SUGGEST_IP
+#            if ip == "DEFAULT":
+#                ip = SUGGEST_IP
 
     if not dhcpused:
         if 'd' not in locals():
@@ -107,51 +136,41 @@ def main():
     if dhcpused == "DEFAULT":
         dhcpused = DEFAULT_USE_DHCP
 
-    if not interf:
-        if 'd' not in locals():
-            d = Dialog('TurnKey Linux - First boot configuration')
 
-        interf = d.get_input(
-            "Set default interface for FOG server",
-            "Enter default interface",
-            SUGGEST_IF)
+#    if not router:
+#       if 'd' not in locals():
+#            d = Dialog('TurnKey Linux - First boot configuration')
+#
+#        router = d.get_input(
+#            "Set FOG server internet gateway",
+#            "Enter your router or transparent proxy IP. This will used by DHCP (if enabled) and will be handed to clients",
+#            SUGGEST_ROUTE)
+#
+#    if router == "DEFAULT":
+#        router = SUGGEST_ROUTE
 
-    if dhcpused == "DEFAULT":
-        dhcpused = SUGGEST_IF
+#    if not nameserver:
+#        if 'd' not in locals():
+#            d = Dialog('TurnKey Linux - First boot configuration')
+#
+#        nameserver = d.get_input(
+#            "Set FOG server DNS",
+#            "Enter the nameserver for FOG. This will used by DHCP (if enabled) and will be handed to clients",
+#            SUGGEST_DNS)
 
-    if not router:
-        if 'd' not in locals():
-            d = Dialog('TurnKey Linux - First boot configuration')
+#    if nameserver == "DEFAULT":
+#        nameserver = SUGGEST_DNS
 
-        router = d.get_input(
-            "Set FOG server internet gateway",
-            "Enter your router or transparent proxy IP. This will also be handed to clients",
-            SUGGEST_ROUTE)
+#Adjust settings relative to answers above
 
-    if router == "DEFAULT":
-        router = SUGGEST_ROUTE
-
-    if not nameserver:
-        if 'd' not in locals():
-            d = Dialog('TurnKey Linux - First boot configuration')
-
-        dnameserver = d.get_input(
-            "Set FOG server DNS",
-            "SEnter the nameserver for FOG. This will also be handed to clients",
-            SUGGEST_DNS)
-
-    if nameserver == "DEFAULT":
-        nameserver = SUGGEST_DNS
-
-# password setting for WebUI
+ #Password
+ # password for WebUI hashed and stored in MySQL
     hash = md5.md5(password)
     hashpass = hash.hexdigest()
-	
-# password for WebUI hashed and stored in MySQL
     m = MySQL()
     m.execute('UPDATE fog.users SET uPass=\"%s\"  WHERE uName=\"fog\";' % hashpass)
 
-# fog user password also updated
+ # set fog Linux user password
     login = 'fog'
     p = subprocess.Popen(('openssl', 'passwd', '-1', password), stdout=subprocess.PIPE)
     shadow_password = p.communicate()[0].strip()
@@ -161,9 +180,29 @@ def main():
     if r != 0:
     	print 'Error changing password for ' + login
 
+ #IP address
+ # Set FOG server IP address
+ # would like to leverage TKL confconsole (or something...) to do this...
+ ######################
+ #THIS NOT DONE YET!!!
+ ######################
 
-# Adjust conf file #1
-#  Set some variables
+ #DHCP disabled
+ # DHCP is enabled by default - this bit will disable it if q answered 'n'.
+ 
+ ######################
+ #THIS NOT DONE YET!!!
+ ###################### 
+ 
+ #Set interface
+ 
+ #Set router IP
+ 
+ #Set DNS server
+ 
+
+#Add above values to conf file #1
+ # Set some variables
     CONF_DIR = "/var/www/fog/commons/"
     CONF_FILE = CONF_DIR+"config.php"
     OLD_FILE = CONF_DIR+"oldconf.php"
@@ -174,19 +213,7 @@ def main():
     mid = '", "'
     end = '" );'+'\n'
 
-    shutil.copy2(CONF_FILE, OLD_FILE)
-    ip_line = ['TFTP_HOST', 'STORAGE_HOST', 'WEB_HOST', 'WOL_HOST']
-    for thing in ip_line:
-        conf = open(CONF_FILE, "r")
-        temp = open(TEMP_FILE, "w")
-        for line in conf:
-            if line.lstrip().startswith(start+thing):
-                temp.write(start+thing+mid+ip+end)
-            else:
-                temp.write(line)
-        conf.close()
-        temp.close()
-        shutil.move(TEMP_FILE, CONF_FILE) 	
+# set password in conf file
     pass_line = ['TFTP_FTP_PASSWORD', 'STORAGE_FTP_PASSWORD']
     for thing in pass_line:
         conf = open(CONF_FILE, "r")
@@ -199,6 +226,23 @@ def main():
         conf.close()
         temp.close()
         shutil.move(TEMP_FILE, CONF_FILE)
+
+# set IP in conf file
+    shutil.copy2(CONF_FILE, OLD_FILE)
+    ip_line = ['TFTP_HOST', 'STORAGE_HOST', 'WEB_HOST', 'WOL_HOST']
+    for thing in ip_line:
+        conf = open(CONF_FILE, "r")
+        temp = open(TEMP_FILE, "w")
+        for line in conf:
+            if line.lstrip().startswith(start+thing):
+                temp.write(start+thing+mid+ip+end)
+            else:
+                temp.write(line)
+        conf.close()
+        temp.close()
+        shutil.move(TEMP_FILE, CONF_FILE)
+
+# set DNS in conf file		
     thing = 'PXE_IMAGE_DNSADDRESS'
     conf = open(CONF_FILE, "r")
     temp = open(TEMP_FILE, "w")
@@ -210,7 +254,6 @@ def main():
         conf.close()
         temp.close()
         shutil.move(TEMP_FILE, CONF_FILE)
-#
 
 #    temp.write(conf.readline())
     
