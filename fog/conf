@@ -20,14 +20,14 @@ ln -s /usr/lib/confconsole/conf.py /usr/lib/inithooks/bin/conf.py
 ln -s /usr/lib/confconsole/ifutil.py /usr/lib/inithooks/bin/ifutil.py
 ln -s /usr/lib/confconsole/ipaddr.py /usr/lib/inithooks/bin/ipaddr.py
 
-#install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam webmin-dhcpd webmin-apache
+# install packages - most of this isn't really needed as FOG installs them anyway, only the Webmin modules are needed...
+#install php5-gd php5-cli php5-curl mysql-client dhcp3-server tftpd-hpa tftp-hpa nfs-kernel-server vsftpd net-tools xinetd sysv-rc-conf build-essential cpp gcc g++ m4 htmldoc libcrypt-passwdmd5-perl lftp openssh-server php-gettext clamav-freshclam 
+install webmin-dhcpd webmin-apache
 
 # set up database
 service mysql start
 cd /opt/tmp
 mysqladmin -u root create fog
-#mysql -u root -prooter fog<fog-usr.sql
-#mysql -u root -prooter fog<fog.sql
 mysql -u root fog<fog-usr.sql
 mysql -u root fog<fog.sql
 
@@ -48,6 +48,9 @@ service apache2 stop
 service mysql stop
 service tftpd-hpa stop
 service vsftpd stop
+service FOGImageReplicator stop
+service FOGMulticastManager stop
+service FOGScheduler stop
 
 # cleanup
 apt-get clean
