@@ -6,15 +6,15 @@ Option:
     --ip=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
                 eg 192.168.1.2
-    --usedhcp=	unless provided, will ask interactively
+#    --usedhcp=	unless provided, will ask interactively
 		DEFAULT=y
-    --interface=unless provided, will ask interactively
+#    --interface=unless provided, will ask interactively
 		Will suggest (hopefully) reasonable guess
 		eg eth0
-    --route=	unless provided, will ask interactively
+#    --route=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
                 eg 192.168.1.254
-    --dns=	unless provided, will ask interactively
+#    --dns=	unless provided, will ask interactively
                 Will suggest (hopefully) reasonable guess
                 eg 192.168.1.1
 """
@@ -60,8 +60,8 @@ def main():
 
     password = ""
 #    ipaddr = ""
-    dhcpused = ""
-    interf = ""
+#    dhcpused = ""
+#    interf = ""
 #    router = ""
 #    nameserver = ""    
 	
@@ -72,14 +72,14 @@ def main():
             password = val
         elif opt == '--ip':
             ipaddr = val
-        elif opt == '--usedhcp':
-            dhcpused = val
-        elif opt == '--interface':
-            interf = val
-        elif opt == '--route':
-            router = val
-        elif opt == '--dns':
-            nameserver = val
+#        elif opt == '--usedhcp':
+#            dhcpused = val
+#        elif opt == '--interface':
+#            interf = val
+#        elif opt == '--route':
+#            router = val
+#        elif opt == '--dns':
+#            nameserver = val
 
     if not password:
         d = Dialog('TurnKey Linux - First boot configuration')
@@ -87,83 +87,48 @@ def main():
             "FOG Password",
             "Enter new password for the default FOG Admin account ('fog').")
     
-#    if not interf:
-#        defaultnic = tklconf._get_default_nic()
-#        if 'd' not in locals():
-#            d = Dialog('TurnKey Linux - First boot configuration')
-#
-#        interf = d.get_input(
-#            "Set default interface for FOG server",
-#            "Enter default interface",
-#            defaultnic)
-#
-#    if interf == "DEFAULT":
-#        interf = defaultnic
+#Network setup inc IP address
+# Set FOG server IP address etc
+# leverages a slightly modified version of TKL confconsole
+# see rest of 
 	
     configure = tklconf.networking()
     configure = tklconf._ifconf_staticip()
     if len(configure) != 3:
         ipaddr, router, nameserver, nameserver2 = configure
-	else:
-	    ipaddr, router, nameserver, nameserver2 = configure
-    print ipaddr
-    print router
-    print nameserver
-	
-		
-#    if not ipaddr:
-#    	    if 'd' not in locals():
-#               d = Dialog('TurnKey Linux - First boot configuration')
-#
-#            ip = d.get_input(
-#                "FOG IP address",
-#                "Enter the FOG server IP address. Only change this if using a direct connection (or screen) to your FOG server. All current network connections will be lost.",
-#                SUGGEST_IP)
+    else:
+	    ipaddr, router, nameserver = configure
 
-#            if ip == "DEFAULT":
-#                ip = SUGGEST_IP
-
-    if not dhcpused:
-        if 'd' not in locals():
-            d = Dialog('TurnKey Linux - First boot configuration')
-
-        dhcpused = d.get_input(
-            "Use FOG server for DHCP",
-            "Use the FOG server for your network DHCP (y/n)?",
-            DEFAULT_USE_DHCP)
-
-    if dhcpused == "DEFAULT":
-        dhcpused = DEFAULT_USE_DHCP
-
-
-#    if not router:
-#       if 'd' not in locals():
-#            d = Dialog('TurnKey Linux - First boot configuration')
-#
-#        router = d.get_input(
-#            "Set FOG server internet gateway",
-#            "Enter your router or transparent proxy IP. This will used by DHCP (if enabled) and will be handed to clients",
-#            SUGGEST_ROUTE)
-#
-#    if router == "DEFAULT":
-#        router = SUGGEST_ROUTE
-
-#    if not nameserver:
+#    if not dhcpused:
 #        if 'd' not in locals():
 #            d = Dialog('TurnKey Linux - First boot configuration')
 #
-#        nameserver = d.get_input(
-#            "Set FOG server DNS",
-#            "Enter the nameserver for FOG. This will used by DHCP (if enabled) and will be handed to clients",
-#            SUGGEST_DNS)
+#        dhcpused = d.get_input(
+#            "Use FOG server for DHCP",
+#            "Use the FOG server for your network DHCP (y/n)?",
+#            DEFAULT_USE_DHCP)
+#
+#    if dhcpused == "DEFAULT":
+#        dhcpused = DEFAULT_USE_DHCP
 
-#    if nameserver == "DEFAULT":
-#        nameserver = SUGGEST_DNS
+    networkbase = ipaddr.split(".")
+    networkbase = networkbase[0]+"."+networkbase[1]+"."+networkbase[2]+"."
+    netexample = networkbase+"x"
 
-#Adjust settings relative to answers above
+    d = Dialog('TurnKey Linux - First boot configuration')
+    startrange = d.get_input(
+        "Set FOG DHCP IP range",
+	"The FOG DHCP server will use the previous network settings for clients \nSet FOG server DHCP start IP range (%s)" % netexample,
+        networkbase)
 
- #Password
- # password for WebUI hashed and stored in MySQL
+    d = Dialog('TurnKey Linux - First boot configuration')
+    endrange = d.get_input(
+        "Set FOG server DHCP end IP range (%s)" % netexample,
+        networkbase)
+    
+
+#Password
+# password for WebUI hashed and stored in MySQL
     hash = md5.md5(password)
     hashpass = hash.hexdigest()
     m = MySQL()
@@ -181,17 +146,18 @@ def main():
 
  #IP address
  # Set FOG server IP address
- # would like to leverage TKL confconsole (or something...) to do this...
- ######################
- #THIS NOT DONE YET!!!
- ######################
+ # done above...
+
 
  #DHCP disabled
  # DHCP is enabled by default - this bit will disable it if q answered 'n'.
  
- ######################
- #THIS NOT DONE YET!!!
- ###################### 
+# Config DHCP
+
+    
+#    startrange =  
+#    endrange = 
+
  
  #Set interface
  
@@ -234,7 +200,7 @@ def main():
         temp = open(TEMP_FILE, "w")
         for line in conf:
             if line.lstrip().startswith(start+thing):
-                temp.write(start+thing+mid+ip+end)
+                temp.write(start+thing+mid+ipaddr+end)
             else:
                 temp.write(line)
         conf.close()
@@ -244,8 +210,9 @@ def main():
 # set DNS in conf file		
     thing = 'PXE_IMAGE_DNSADDRESS'
     conf = open(CONF_FILE, "r")
-    temp = open(TEMP_FILE, "w")
     for line in conf:
+        conf = open(CONF_FILE, "r")
+        temp = open(TEMP_FILE, "w")
         if line.lstrip().startswith(start+thing):
             temp.write(start+thing+mid+dns+end)
         else:
