@@ -410,7 +410,7 @@ success, an array of strings describing errors otherwise"""
 
             self.console.msgbox("Error", err)
 
-        return addr, gateway, nameservers
+        return addr, netmask, gateway, nameservers
 
     def _ifconf_dhcp(self):
         self.console.infobox("Requesting DHCP for %s..." % self.ifname)
